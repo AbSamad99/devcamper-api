@@ -124,11 +124,27 @@ BootcampSchema.pre('save', async function(next) {
     formattedAddress: loc[0].formattedAddress,
     street: loc[0].streetName,
     city: loc[0].city,
-    state: loc[0].state,
+    state: loc[0].stateCode,
     zipcode: loc[0].zipcode,
-    country: loc[0].country
+    country: loc[0].countryCode
   };
+  //Removing the address field as it is no longer needed
+  this.address = undefined;
   next();
+});
+
+//Cascade delete courses when a Bootcamp is deleted
+BootcampSchema.pre('remove', async function(next) {
+  await this.model('Course').deleteMany({ bootcamp: this._id });
+  next();
+});
+
+//Reverse populate with virtuals
+BootcampSchema.virtual('courses', {
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp',
+  justOne: false
 });
 
 module.exports = mongoose.model('Bootcamp', BootcampSchema);
