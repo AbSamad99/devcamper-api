@@ -1,6 +1,8 @@
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const fileupload = require('express-fileupload');
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/error');
 
@@ -24,11 +26,18 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+//File upload middleware
+app.use(fileupload());
+
+//Setting public folder as static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Mount Routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
 
-//Using Error Handling Middleware
+//Using Error Handling Middleware,
+//IMP: Must be called after the routes
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
