@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const fileupload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/error');
 
@@ -15,6 +16,7 @@ connectDB();
 //Importing Routes
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
+const auth = require('./routes/auth');
 
 const app = express();
 
@@ -29,12 +31,16 @@ if (process.env.NODE_ENV === 'development') {
 //File upload middleware
 app.use(fileupload());
 
+//Using Cookie parser middleware
+app.use(cookieParser());
+
 //Setting public folder as static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Mount Routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
 
 //Using Error Handling Middleware,
 //IMP: Must be called after the routes
