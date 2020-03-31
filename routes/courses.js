@@ -10,9 +10,15 @@ const {
 
 //Importing middlewares
 const advancedResults = require('../middlewares/advancedResults');
-const { protect, authorize } = require('../middlewares/auth');
+const {
+  protect,
+  authorize,
+  checkAuthorization
+} = require('../middlewares/auth');
 
 const Course = require('../models/Courses');
+
+const Bootcamp = require('../models/Bootcamps');
 
 const router = express.Router({ mergeParams: true });
 
@@ -25,12 +31,27 @@ router
     }),
     getCourses
   )
-  .post(protect, authorize('publisher', 'admin'), addCourse);
+  .post(
+    protect,
+    authorize('publisher', 'admin'),
+    checkAuthorization(Bootcamp),
+    addCourse
+  );
 
 router
   .route('/:id')
   .get(getCourse)
-  .put(protect, authorize('publisher', 'admin'), updateCourse)
-  .delete(protect, authorize('publisher', 'admin'), deleteCourse);
+  .put(
+    protect,
+    authorize('publisher', 'admin'),
+    checkAuthorization(Course),
+    updateCourse
+  )
+  .delete(
+    protect,
+    authorize('publisher', 'admin'),
+    checkAuthorization(Course),
+    deleteCourse
+  );
 
 module.exports = router;

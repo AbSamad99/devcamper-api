@@ -31,15 +31,12 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 //Route: PUT /api/v1/bootcamps/:id,
 //Access: Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+  //Update the bootcamp
+  bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
   });
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not Found with id ${req.params.id}`, 404)
-    );
-  }
+
   res.status(200).json({
     success: true,
     data: bootcamp
@@ -50,6 +47,22 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 //Route: POST /api/v1/bootcamps,
 //Access: Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
+  //Add user to req.body
+  req.body.user = req.user.id;
+
+  //Check if the user has published bootcamps
+  const publishedBootcamp = await Bootcamp.findOne({ user: req.body.user });
+
+  //if the user is not an admin, they can only create one bootcamp
+  if (publishedBootcamp && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `The user with id ${req.user.id} has already published a bootcamp`,
+        400
+      )
+    );
+  }
+
   //Adding the new course to our Database using the imported Bootcamp Model
   const bootcamp = await Bootcamp.create(req.body);
   res.status(201).json({
@@ -62,13 +75,9 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 //Route: DELETE /api/v1/bootcamps/:id,
 //Access: Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.id);
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not Found with id ${req.params.id}`, 404)
-    );
-  }
-  await bootcamp.remove();
+  //Delete the bootcamp
+  const bootcamp = await Bootcamp.findByIdAndRemove(req.params.id);
+
   res.status(200).json({
     success: true,
     data: {}
@@ -108,13 +117,6 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 //Route: PUT /api/v1/bootcamps/:id/photo,
 //Access: Private
 exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.id);
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not Found with id ${req.params.id}`, 404)
-    );
-  }
-
   //Check to see if file was uploaded or not
   if (!req.files) {
     return next(new ErrorResponse(`Please Upload a file`, 400));

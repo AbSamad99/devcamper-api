@@ -45,6 +45,7 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 //Access: Private
 exports.addCourse = asyncHandler(async (req, res, next) => {
   req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id;
   //Adding the new Course to our Database using the imported Bootcamp Model
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
@@ -69,14 +70,7 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
 //Route: PUT /api/v1/courses/:id,
 //Access: Private
 exports.updateCourse = asyncHandler(async (req, res, next) => {
-  let course = await Course.findById(req.params.id);
-
-  if (!course) {
-    return next(
-      new ErrorResponse(`Course not Found with id ${req.params.id}`, 404)
-    );
-  }
-
+  //Update the course
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
     new: true
@@ -92,15 +86,8 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 //Route: DELETE /api/v1/courses/:id,
 //Access: Private
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findById(req.params.id);
-
-  if (!course) {
-    return next(
-      new ErrorResponse(`Course not Found with id ${req.params.id}`, 404)
-    );
-  }
-
-  await course.remove();
+  //Delete the course
+  constcourse = await Course.findByIdAndRemove(req.params.id);
 
   res.status(200).json({
     success: true,

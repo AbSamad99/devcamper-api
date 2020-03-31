@@ -45,3 +45,31 @@ exports.authorize = (...roles) => {
     next();
   };
 };
+
+//Check if the user is authorized
+exports.checkAuthorization = model =>
+  asynchandler(async (req, res, next) => {
+    if (req.params.bootcampId) {
+      req.params.id = req.params.bootcampId;
+    }
+    let resource = await model.findById(req.params.id);
+    if (!resource) {
+      return next(
+        new ErrorResponse(
+          `${model.modelName} not Found with id ${req.params.id}`,
+          404
+        )
+      );
+    }
+
+    //Check if the User is authorized
+    if (resource.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return next(
+        new ErrorResponse(
+          `User with id ${req.user.id} is not permitted to modify this ${model.modelName}`,
+          401
+        )
+      );
+    }
+    next();
+  });
