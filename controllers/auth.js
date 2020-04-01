@@ -63,7 +63,43 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   });
 });
 
-//Desc: Get Forgot Password,
+//Desc: Update user details,
+//Route: PUT /api/v1/auth/updatedetails,
+//Access: Private
+exports.updateDetails = asyncHandler(async (req, res, next) => {
+  const fieldsToUpdate = {
+    name: req.body.name,
+    email: req.body.email
+  };
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true
+  });
+  res.status(200).json({
+    success: true,
+    data: user
+  });
+});
+
+//Desc: Update password,
+//Route: PUT /api/v1/auth/updatepassword,
+//Access: Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+
+  //Check current password
+  if (!(await user.matchPassword(req.body.currentPassword))) {
+    return next(new ErrorResponse(`Password is incorrect`, 401));
+  }
+
+  user.password = req.body.newPassword;
+
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
+//Desc:  Forgot Password,
 //Route: POST /api/v1/auth/forgotpassword,
 //Access: Public
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
@@ -106,7 +142,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   }
 });
 
-//Desc: Get Current Logged in User,
+//Desc: Reset Password,
 //Route: PUT /api/v1/auth/resetpassword/:resetToken,
 //Access: Public
 exports.resetPassword = asyncHandler(async (req, res, next) => {
