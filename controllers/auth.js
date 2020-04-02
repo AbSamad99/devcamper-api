@@ -42,7 +42,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Invalid Credentials`, 400));
   }
 
-  //Check if passwor matches
+  //Check if password matches
   const isMatch = await user.matchPassword(password);
 
   if (!isMatch) {
@@ -50,6 +50,20 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   sendTokenResponse(user, 200, res);
+});
+
+//Desc: Get Current Logged in User,
+//Route: GET /api/v1/auth/logout,
+//Access: Private
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({
+    success: true,
+    data: {}
+  });
 });
 
 //Desc: Get Current Logged in User,
@@ -113,7 +127,6 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
   //Get reset token
   const resetToken = user.getResetPasswordToken();
-  console.log(resetToken);
 
   await user.save({ validateBeforeSave: false });
 

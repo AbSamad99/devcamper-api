@@ -12,8 +12,6 @@ const Review = require('../models/Reviews');
 
 const router = express.Router({ mergeParams: true });
 
-console.log('re');
-
 const advancedResults = require('../middlewares/advancedResults');
 const {
   protect,

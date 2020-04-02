@@ -4,6 +4,13 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const expressMongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
+const cors = require('cors');
+
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/error');
 
@@ -33,8 +40,31 @@ if (process.env.NODE_ENV === 'development') {
 //File upload middleware
 app.use(fileupload());
 
+//Using express mongo sanitize middleware
+app.use(expressMongoSanitize());
+
 //Using Cookie parser middleware
 app.use(cookieParser());
+
+//Using helmet middleware, used to set security headers
+app.use(helmet());
+
+//Using xss-clean middleware, used to prevent cross site scripting attacks
+app.use(xss());
+
+//Using Reate limiting middleware
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, //10 mins
+  max: 100
+});
+
+app.use(limiter);
+
+//Using the CORS middleware
+app.use(cors());
+
+//Using the hpp middleware to prevent http param pollution
+app.use(hpp());
 
 //Setting public folder as static folder
 app.use(express.static(path.join(__dirname, 'public')));

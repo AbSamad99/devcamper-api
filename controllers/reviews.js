@@ -8,7 +8,6 @@ const asyncHandler = require('../middlewares/async');
 //Route: GET /api/v1/bootcamps/:bootcampId/reviews
 //Access: Public
 exports.getReviews = asyncHandler(async (req, res, next) => {
-  console.log('re');
   if (req.params.bootcampId) {
     const reviews = await Review.find({ bootcamp: req.params.bootcampId });
 
