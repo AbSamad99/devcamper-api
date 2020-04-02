@@ -1,10 +1,10 @@
-# DevCamper API
+# BootStarter API
 
-> Backend API for DevCamper application, which is a bootcamp directory website
+> Backend API for BootStarter application, which is a bootcamp directory website
 
 ## Usage
 
-Rename "config/config.env.env" to "config/config.env" and update the values/settings to your own
+Rename "config/config.env.env" to "config/config.env" and update the values/settings yourselves
 
 ## Install Dependencies
 
