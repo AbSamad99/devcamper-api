@@ -36,10 +36,10 @@ node seeder -i
 
 ## Demo
 
-The API is live at [devcamper.io](https://devcamper.io)
+The API is not yet in production
 
-Extensive documentation with examples [here](https://documenter.getpostman.com/view/8923145/SVtVVTzd?version=latest)
+Extensive documentation with examples [here](https://documenter.getpostman.com/view/8653947/SzYaVJ28?version=latest)
 
 - Version: 1.0.0
 - License: MIT
-- Author: Brad Traversy
+- Author: Abdussamad Syed
